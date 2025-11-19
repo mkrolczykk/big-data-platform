@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  redis:
+    build:
+      context: .
+      dockerfile: redis_dockerfile
+    container_name: redis
+    user: root
+    ports:
+      - "${REDIS_HOST_PORT}:${REDIS_HOST_INTERNAL_PORT}"
+    environment:
+      TZ: ${TIME_ZONE}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
+    volumes:
+      - ./containers-data/redis/data:/data
+    networks:
+      - ${GLOBAL_NETWORK:-services}

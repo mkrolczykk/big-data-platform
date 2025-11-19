@@ -1,0 +1,79 @@
+version: '3.9'
+
+x-spark-common:
+  &spark-common
+  user: root
+  build:
+    context: .
+    dockerfile: apache_spark_dockerfile
+  volumes:
+    - ./../../spark/jobs:/opt/spark/jobs
+    - ./../../spark/configs:/opt/spark/configs
+    - ./../../spark/dependencies:/opt/spark/dependencies
+    - ./../../spark/tests:/opt/spark/tests
+    - ./../../spark/packages.zip:/opt/spark/packages.zip
+  env_file:
+    - ./.env
+    - ./../../spark/.env
+  platform: linux/amd64
+  working_dir: /opt/spark
+  networks:
+    - ${GLOBAL_NETWORK:-services}
+
+services:
+  spark-master:
+    <<: *spark-common
+    container_name: spark-master
+    command: bin/spark-class org.apache.spark.deploy.master.Master
+    depends_on:
+      - redis
+    ports:
+      - "7077:7077"
+      - "9090:8080"
+    environment:
+      SPARK_MODE: master
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+  spark-worker-1:
+    <<: *spark-common
+    container_name: spark-worker-1
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_MODE: worker
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 4g
+      SPARK_MASTER_URL: spark://spark-master:7077
+
+  spark-worker-2:
+    <<: *spark-common
+    container_name: spark-worker-2
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_MODE: worker
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 4g
+      SPARK_MASTER_URL: spark://spark-master:7077
+
+  spark-worker-3:
+    <<: *spark-common
+    container_name: spark-worker-3
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_MODE: worker
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 4g
+      SPARK_MASTER_URL: spark://spark-master:7077

@@ -1,0 +1,45 @@
+FROM apache/spark:3.5.6-python3
+
+USER root
+
+# Install dependencies including unzip
+RUN apt-get update && \
+    apt-get install -y curl wget unzip procps && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and install Livy
+ENV LIVY_VERSION=0.7.1
+ENV LIVY_HOME=/opt/livy
+ENV PATH=$LIVY_HOME/bin:$PATH
+
+RUN mkdir -p $LIVY_HOME && \
+    wget https://archive.apache.org/dist/incubator/livy/${LIVY_VERSION}-incubating/apache-livy-${LIVY_VERSION}-incubating-bin.zip && \
+    unzip apache-livy-${LIVY_VERSION}-incubating-bin.zip && \
+    mv apache-livy-${LIVY_VERSION}-incubating-bin/* $LIVY_HOME && \
+    rm -rf apache-livy-${LIVY_VERSION}-incubating-bin.zip apache-livy-${LIVY_VERSION}-incubating-bin
+
+# Create necessary directories
+RUN mkdir -p $LIVY_HOME/logs $LIVY_HOME/work
+
+# Copy configuration template
+COPY livy.conf.template $LIVY_HOME/conf/livy.conf
+
+# Create /opt/bitnami directory and then create symlink for Spark compatibility
+RUN mkdir -p /opt/bitnami && \
+    ln -sf /opt/spark /opt/bitnami/spark
+
+# Set proper permissions
+RUN chmod -R 755 $LIVY_HOME && \
+    chown -R root:root $LIVY_HOME
+
+# Create startup script
+RUN echo '#!/bin/bash' > /opt/start-livy.sh && \
+    echo '/opt/livy/bin/livy-server start' >> /opt/start-livy.sh && \
+    echo 'tail -f /opt/livy/logs/livy-*.out' >> /opt/start-livy.sh && \
+    chmod +x /opt/start-livy.sh
+
+WORKDIR $LIVY_HOME
+
+EXPOSE 8998
+
+CMD ["/opt/start-livy.sh"]

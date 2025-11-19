@@ -1,0 +1,18 @@
+FROM apache/spark:3.4.0-python3
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y gcc python3-dev openjdk-17-jdk && \
+    apt-get clean
+
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+
+RUN pip install \
+    python-dotenv==1.0.0 \
+    pipenv==2023.12.1 \
+    redis==5.0.3
+
+# create symlink for compatibility with Livy
+RUN mkdir -p /opt/bitnami && \
+    ln -s /opt/spark /opt/bitnami/spark

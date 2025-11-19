@@ -1,0 +1,36 @@
+# Livy configuration
+livy.server.port = 8998
+livy.server.host = 0.0.0.0
+
+# Spark configuration
+livy.spark.master = spark://spark-master:7077
+livy.spark.deploy-mode = cluster
+
+# Security (adjust as needed)
+livy.impersonation.enabled = false
+
+# File access
+livy.file.local-dir-whitelist = /opt/livy/jobs,/opt/livy/dependencies
+
+# Session management
+livy.server.session.timeout = 1h
+livy.server.session.factory = yarn
+
+# Spark home
+spark.home = /opt/spark
+
+# Spark jars
+spark.jars = /opt/spark/jars/*
+
+# Logging
+livy.server.launch.kerberos.keytab =
+livy.server.launch.kerberos.principal =
+
+# Additional configurations for better compatibility
+livy.server.session.state-retain.sec = 3600
+livy.rsc.server.port = 8998
+livy.rsc.jars = local:/opt/spark/jars/*
+
+# Spark configurations
+spark.driver.extraJavaOptions = -Dlog4j.configuration=file:/opt/spark/conf/log4j.properties
+spark.executor.extraJavaOptions = -Dlog4j.configuration=file:/opt/spark/conf/log4j.properties
