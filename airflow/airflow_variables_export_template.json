@@ -1,14 +1,8 @@
 {
-    "aap_cluster_network_name": "local_assets_analysis_platform",
+    "bigdata_cluster_network_name": "local_big_data_platform",
     "aws_secret_access_key": "ADD_ME",
     "docker_socket_url": "unix://var/run/docker.sock",
-    "ethereum_etl_aws_s3_output_uri": "s3://aap-dev-bucket/data/raw/blockchains/ethereum/",
-    "ethereum_etl_downloaded_data_path": "C://Users//XXXXADD_MEXXXXX//Downloads//ethtmpdir//data//raw//blockchains//ethereum",
-    "etherscan_api_key": "ADD_ME",
-    "infura_rpc_provider": "https://mainnet.infura.io/v3/<ADD_SECRET_TOKEN_HERE>",
-    "redis_db_number": 0,
     "redis_host": "localhost",
-    "redis_port": 6379,
-    "rpc_provider_url": "https://rpc.ankr.com/eth/<ADD_SECRET_TOKEN_HERE",
-    "s3_bucket_name": "aap-dev-bucket"
+    "redis_port": 6380,
+    "s3_bucket_name": "bigdata-dev-bucket"
 }
