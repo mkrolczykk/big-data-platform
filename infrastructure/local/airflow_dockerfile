@@ -1,4 +1,4 @@
-FROM apache/airflow:2.8.2-python3.9
+FROM apache/airflow:2.8.4-python3.8
 
 USER root
 RUN apt-get update && \
@@ -11,7 +11,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 USER airflow
 
 RUN pip install \
-    apache-airflow==2.8.2 \
+    apache-airflow==2.8.4 \
     pyspark==3.4.0 \
     python-dotenv==1.0.0 \
     web3==6.11.3 \

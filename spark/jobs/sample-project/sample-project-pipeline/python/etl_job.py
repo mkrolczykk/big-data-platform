@@ -27,7 +27,6 @@ For more details on submitting Spark applications, please see here:
 http://spark.apache.org/docs/latest/submitting-applications.html
 
 """
-
 from pyspark.sql import Row
 from pyspark.sql.functions import col, concat_ws, lit
 
@@ -42,32 +41,11 @@ def main():
     # start Spark application and get Spark session, logger and config
     spark, log, config = start_spark(
         app_name='Sample pyspark etl job with extra configs and packages',
-        files=['configs/sample-project/sample-project-pipeline/etl_config.json'])
+        files=['configs/sample-project/sample-project-pipeline/etl_config.json']
+    )
 
     log.warn('etl_job is up-and-running')
 
-    create_test_data(spark, config)
-
-    log.warn('test_etl_job is finished')
-    spark.stop()
-    return None
-
-
-def transform_data(df, steps_per_floor_):
-    df_transformed = (
-        df
-        .select(
-            col('id'),
-            concat_ws(
-                ' ',
-                col('first_name'),
-                col('second_name')).alias('name'),
-               (col('floor') * lit(steps_per_floor_)).alias('steps_to_desk')))
-
-    return df_transformed
-
-
-def create_test_data(spark, config):
     local_records = [
         Row(id=1, first_name='Dan', second_name='Germain', floor=1),
         Row(id=2, first_name='Dan', second_name='Sommerville', floor=1),
@@ -79,23 +57,22 @@ def create_test_data(spark, config):
         Row(id=8, first_name='Kim', second_name='Suter', floor=4)
     ]
 
-    df = spark.createDataFrame(local_records)
+    src_sdf = spark.createDataFrame(local_records)
 
-    (df
-     .coalesce(1)
-     .write
-     .parquet('spark/tests/sample-project/sample-project-pipeline/test-data/employees', mode='overwrite'))
+    steps_per_floor_ = config['steps_per_floor']
+    final_sdf = src_sdf.select(
+            col('id'),
+            concat_ws(
+                ' ',
+                col('first_name'),
+                col('second_name')).alias('name'),
+               (col('floor') * lit(steps_per_floor_)).alias('steps_to_desk'))
 
-    df_tf = transform_data(df, config['steps_per_floor'])
+    final_sdf.show(100, truncate=False)
 
-    (df_tf
-     .coalesce(1)
-     .write
-     .parquet('spark/tests/sample-project/sample-project-pipeline/test-data/employees-report', mode='overwrite'))
-
+    log.warn('test_etl_job is finished')
+    spark.stop()
     return None
 
-
-# entry point for PySpark ETL application
 if __name__ == '__main__':
     main()

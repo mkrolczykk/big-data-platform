@@ -25,7 +25,7 @@ python_job = SparkSubmitOperator(
     task_id="python_job",
     conn_id="spark-conn",
     application="spark/jobs/sample-project/sample-project-pipeline/python/wordcount_job.py",
-    dag=main_dag
+    dag=main_dag,
 )
 
 end = PythonOperator(

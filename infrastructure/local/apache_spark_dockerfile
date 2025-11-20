@@ -2,17 +2,50 @@ FROM apache/spark:3.4.0-python3
 
 USER root
 
+# Install build tools & system deps
 RUN apt-get update && \
-    apt-get install -y gcc python3-dev openjdk-17-jdk && \
+    apt-get install -y \
+        wget \
+        build-essential \
+        libssl-dev \
+        zlib1g-dev \
+        libncurses5-dev \
+        libffi-dev \
+        libsqlite3-dev \
+        liblzma-dev \
+        libreadline-dev \
+        libbz2-dev \
+        libgdbm-dev \
+        tk-dev \
+        uuid-dev \
+        openjdk-17-jdk \
+        gcc \
+        python3-dev && \
     apt-get clean
 
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
-RUN pip install \
-    python-dotenv==1.0.0 \
-    pipenv==2023.12.1 \
-    redis==5.0.3
+# ---------- Install Python 3.8.19 from source ----------
+RUN cd /usr/src && \
+    wget https://www.python.org/ftp/python/3.8.19/Python-3.8.19.tgz && \
+    tar xzf Python-3.8.19.tgz && \
+    cd Python-3.8.19 && \
+    ./configure --enable-optimizations --with-ensurepip=install && \
+    make -j 8 && \
+    make altinstall && \
+    ln -sf /usr/local/bin/python3.8 /usr/bin/python3 && \
+    ln -sf /usr/local/bin/python3.8 /usr/bin/python && \
+    ln -sf /usr/local/bin/pip3.8 /usr/bin/pip3
 
-# create symlink for compatibility with Livy
+# ---------- additional python packages ----------
+RUN pip3 install --upgrade pip && \
+    pip install \
+        python-dotenv==1.0.0 \
+        pipenv==2023.12.1 \
+        redis==5.0.3
+
+# ---------- Livy symlink ----------
 RUN mkdir -p /opt/bitnami && \
     ln -s /opt/spark /opt/bitnami/spark
+
+USER spark
