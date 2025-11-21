@@ -3,18 +3,22 @@ CREATE SCHEMA IF NOT EXISTS hive.bigdata
 WITH (location = 's3a://bigdata-dev-bucket/');
 
 -- Tworzenie tabeli źródłowej
+DROP TABLE hive.bigdata.car_sales_bronze;
+
+TRUNCATE TABLE hive.bigdata.car_sales_bronze;
+
 CREATE TABLE IF NOT EXISTS hive.bigdata.car_sales_bronze (
-    sale_date DATE,
-    salesperson_name VARCHAR,
-    customer_name VARCHAR,
-    make VARCHAR,
-    model VARCHAR,
-    year INTEGER,
-    price INTEGER,
-    discount DOUBLE,
-    total_amount DOUBLE,
-    created_at TIMESTAMP,
-    updated_at DATE
+    "Date" VARCHAR,
+    "Salesperson" VARCHAR,
+    "Customer Name" VARCHAR,
+    "Car Make" VARCHAR,
+    "Car Model" VARCHAR,
+    "Car Year" STRING,
+    "Sale Price" STRING,
+    "Commission Rate" STRING,
+    "Commission Earned" STRING,
+    processing_timestamp TIMESTAMP,
+    last_refresh_date  DATE
 )
 WITH (
     format = 'PARQUET',

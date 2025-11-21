@@ -25,6 +25,8 @@ services:
       context: .
       dockerfile: hive_dockerfile
     container_name: hive-metastore
+    ports:
+      - "9083:9083"
     depends_on:
       mysql_db:
         condition: service_healthy
@@ -42,20 +44,18 @@ services:
       HIVE_METASTORE_DB_NAME: hive_metastore
       HIVE_METASTORE_DB_USER: hive
       HIVE_METASTORE_DB_PASS: hive
-    command: >
-      bash -c "
-        echo 'Waiting for MySQL to be ready...' &&
-        until nc -z mysql_db 3306; do
-          sleep 2
-        done &&
-        echo 'MySQL is ready!' &&
-        echo 'Initializing Hive Metastore Schema...' &&
-        /opt/hive/bin/schematool -initSchema -dbType mysql &&
-        echo 'Starting Hive Metastore...' &&
-        /opt/hive/bin/start-metastore
-      "
-    ports:
-      - "9083:9083"
+#    command: >
+#      bash -c "
+#        echo 'Waiting for MySQL to be ready...' &&
+#        until nc -z mysql_db 3306; do
+#          sleep 2
+#        done &&
+#        echo 'MySQL is ready!' &&
+#        echo 'Initializing Hive Metastore Schema...' &&
+#        /opt/hive/bin/schematool -initSchema -dbType mysql &&
+#        echo 'Starting Hive Metastore...' &&
+#        /opt/hive/bin/start-metastore
+#      "
     healthcheck:
       test: [ "CMD", "netstat", "-an", "|", "grep", "9083" ]
       interval: 10s
