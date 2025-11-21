@@ -48,4 +48,9 @@ RUN pip3 install --upgrade pip && \
 RUN mkdir -p /opt/bitnami && \
     ln -s /opt/spark /opt/bitnami/spark
 
+# Install PostgreSQL JDBC on cluster
+RUN apt-get update && apt-get install -y wget
+RUN wget -O /opt/spark/jars/postgresql-42.6.0.jar \
+    https://jdbc.postgresql.org/download/postgresql-42.6.0.jar
+
 USER spark

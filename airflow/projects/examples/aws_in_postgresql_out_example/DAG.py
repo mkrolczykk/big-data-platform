@@ -5,7 +5,7 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
 
-DAG_name = 'process_minio_example_data_dag'
+DAG_name = 'aws_in_postgresql_out_example_dag'
 
 LOG = logging.getLogger(__name__)
 
@@ -14,17 +14,30 @@ def prepare_input(**kwargs):
     ti = kwargs['ti']
 
     s3_bucket_name = Variable.get("s3_bucket_name") # dev -> bigdata-dev-bucket
-    output_base_uri = f's3a://{s3_bucket_name}/00_landing/daily-minimum-temperatures-in-me.csv'
+
+    # AWS available .csv filenames (just for presentation):
+    # 1. Electric_Production
+    # 2. monthly-beer-production-in-austr
+    # 3. car_sales_data
+    src_data = "car_sales_data"
+
+    aws_input_uri = f's3a://{s3_bucket_name}/00_landing/{src_data}.csv'
 
     paths_list = [
-        output_base_uri
+        aws_input_uri
     ]
     csv_files_uris_str = ','.join(paths_list)
-
     LOG.info('csv_files_uris_str -> {}'.format(csv_files_uris_str))
 
+    # output
+    db_host = "postgres_db" # Variable.get("db_host")
+    db_port = 5432 # Variable.get("db_port")
+    db_name = "postgres_db" # Variable.get("db_name")
+    postgresql_output_uri = f'jdbc:postgresql://{db_host}:{db_port}/{db_name}'
+
+    # push info for next tasks
     ti.xcom_push(key='input_csv_files_uris', value=csv_files_uris_str)
-    ti.xcom_push(key='s3_output_uri', value=f's3a://{s3_bucket_name}/01_bronze/daily_minimum_temperatures_in_me_enriched.csv')
+    ti.xcom_push(key='postgresql_output_path', value=postgresql_output_uri)
 
 
 @dag(
@@ -36,11 +49,11 @@ def prepare_input(**kwargs):
         "depends_on_past": True,
         'email_on_failure': False,
         'email_on_retry': False,
-        'retries': 1,
+        'retries': 0,
         'retry_delay': timedelta(seconds=15),
     }
 )
-def process_minio_example_data_dag():
+def process_aws_in_postgresql_out_example_dag():
 
     prepare_input_args_task = PythonOperator(
         task_id="prepare_input_args_task",
@@ -52,16 +65,16 @@ def process_minio_example_data_dag():
         task_id="run_spark_submit_task",
         conn_id="spark-conn",
         py_files="spark/packages.zip",
-        packages='org.apache.spark:spark-hadoop-cloud_2.12:3.4.0',
-        application="spark/jobs/sample-project/sample-project-pipeline/python/process_minio_example_data_job.py",
+        packages='org.apache.spark:spark-hadoop-cloud_2.12:3.4.0,org.postgresql:postgresql:42.6.0',
+        application="spark/jobs/sample-project/sample-project-pipeline/python/aws_in_postgresql_out_example_job.py",
         application_args=[
             "{{ ti.xcom_pull(key='input_csv_files_uris') }}",
-            "{{ ti.xcom_pull(key='s3_output_uri') }}"
+            "{{ ti.xcom_pull(key='postgresql_output_path') }}"
         ]
     )
 
     prepare_input_args_task >> run_spark_submit_task
 
 
-main_dag = process_minio_example_data_dag()
+main_dag = process_aws_in_postgresql_out_example_dag()
 DAGS = [main_dag]

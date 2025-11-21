@@ -41,7 +41,7 @@ def main():
     # start Spark application and get Spark session, logger and config
     spark, log, config = start_spark(
         app_name='Sample pyspark etl job with extra configs and packages',
-        files=['configs/sample-project/sample-project-pipeline/etl_config.json']
+        files=['configs/sample-project/sample-project-pipeline/etl_job_config.json']
     )
 
     log.warn('etl_job is up-and-running')
