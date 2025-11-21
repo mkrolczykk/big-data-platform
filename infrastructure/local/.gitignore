@@ -1,2 +1,3 @@
 .env
 ./containers-data
+/trino/config/hive-site.xml
