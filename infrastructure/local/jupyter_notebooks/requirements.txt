@@ -1,0 +1,62 @@
+# Core MLflow
+mlflow==2.16.0
+psycopg2-binary==2.9.9
+
+# AWS S3 & MinIO & ChromaDB
+boto3==1.34.162
+botocore==1.34.162
+s3transfer==0.10.2
+chromadb==1.1.1
+
+# ML Libraries
+scikit-learn==1.5.1
+numpy==1.26.4
+pandas==2.2.2
+tensorflow==2.18.0
+torch==2.8.0
+nltk==3.9.2
+scipy==1.13.1
+joblib==1.4.2
+threadpoolctl==3.5.0
+spacy==3.7.2
+wordcloud==1.9.3
+langchain==0.3.17
+langchain-community==0.3.16
+huggingface-hub==0.35.3
+fastembed==0.7.3
+pdf2image==1.17.0
+pdfminer.six==20250506
+pytesseract==0.3.13
+opencv-python==4.10.0.82
+deepface==0.0.95
+tf-keras==2.18.0
+deepface-antispoofing==1.1.2
+tensorflow_datasets==4.9.9
+
+# Spark
+pyspark==3.5.1
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==6.3.1
+bokeh==3.8.0
+streamlit==1.50.0
+
+# Jupyter & IPython
+notebook==7.2.2
+jupyterlab==4.2.3
+ipykernel==6.29.5
+ipython==8.26.0
+
+# Utilities
+packaging==24.1
+requests==2.32.5
+pyyaml==6.0.2
+dvc==3.63.0
+dvc-s3==3.2.2
+pypdf==6.1.1
+kagglehub==0.3.13
+
+# blockchain
+dune-client==1.9.4

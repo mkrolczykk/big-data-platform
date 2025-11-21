@@ -13,6 +13,12 @@
     "aws_secret_access_key": "ADD_ME",
     "extra": "{\"aws_access_key_id\": \"ADD_ME\", \"aws_secret_access_key\": \"ADD_ME\"}"
   },
+    "livy-conn": {
+    "conn_type": "livy",
+    "description": "Livy connection URL",
+    "host": "livy-server",
+    "port": 8998
+  },
     "minio-conn": {
     "conn_type": "aws",
     "description": "MinIO connection",

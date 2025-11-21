@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  jupyter_service:
+    image: jupyter/datascience-notebook:x86_64-python-3.11.6
+    container_name: jupyter_service
+    depends_on:
+      livy-server:
+        condition: service_healthy
+    ports:
+      - "8888:8888"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      JUPYTER_ENABLE_LAB: "yes"
+      LIVY_URL: "http://livy-server:${LIVY_SERVER_HOST_INTERNAL_PORT}"
+      PASSWORD: ${JUPYTER_PASSWORD}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN}
+    volumes:
+      - ./jupyter_notebooks/work:/home/jovyan/work
+      - ./jupyter_notebooks/requirements.txt:/tmp/requirements.txt
+    command: >
+      bash -lc "pip install --no-cache-dir -r /tmp/requirements.txt && 
+                pip install findspark requests &&
+                start-notebook.sh --NotebookApp.token=''"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
