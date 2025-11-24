@@ -1,3 +1,6 @@
+## Current architecture
+![img.png](docs/img.png)
+
 ## Guide
 ### Start project
 ```
