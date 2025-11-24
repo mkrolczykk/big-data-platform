@@ -20,5 +20,6 @@ RUN pip install \
     uniswap-universal-router-decoder==1.0.0 \
     apache-airflow-providers-apache-spark==4.0.0 \
     apache-airflow-providers-apache-livy==3.9.1 \
+    apache-airflow-providers-trino==5.8.0 \
     apache-airflow-providers-docker==3.9.2 \
     apache-airflow-providers-amazon==8.19.0

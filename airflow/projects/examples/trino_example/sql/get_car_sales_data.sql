@@ -1,0 +1,1 @@
+SELECT * FROM hive.bigdata.car_sales_bronze LIMIT {{ params.query_limit }}
