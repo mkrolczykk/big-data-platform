@@ -19,6 +19,14 @@
     "host": "livy-server",
     "port": 8998
   },
+    "trino_default": {
+    "conn_type": "trino",
+    "description": "Trino cluster connection URL",
+    "host": "trino-coordinator",
+    "login": "admin",
+    "port": 8080,
+    "extra": "{\"protocol\": \"http\", \"verify\": \"false\", \"auth\": \"None\"}"
+  },
     "minio-conn": {
     "conn_type": "aws",
     "description": "MinIO connection",

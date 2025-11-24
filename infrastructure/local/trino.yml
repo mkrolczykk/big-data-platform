@@ -1,0 +1,104 @@
+version: '3.9'
+
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hive_metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: hive
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./containers-data/mysql-data:/var/lib/mysql
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  hive-metastore:
+    build:
+      context: .
+      dockerfile: hive_dockerfile
+    container_name: hive-metastore
+    ports:
+      - "9083:9083"
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    environment:
+      DB_DRIVER: mysql
+      SERVICE_NAME: metastore
+      DB_HOST: mysql_db
+      DB_PORT: 3306
+      DB_NAME: hive_metastore
+      DB_USER: hive
+      DB_PASS: hive
+      HIVE_METASTORE_DB_TYPE: mysql
+      HIVE_METASTORE_DB_HOST: mysql_db
+      HIVE_METASTORE_DB_PORT: 3306
+      HIVE_METASTORE_DB_NAME: hive_metastore
+      HIVE_METASTORE_DB_USER: hive
+      HIVE_METASTORE_DB_PASS: hive
+    healthcheck:
+      test: [ "CMD", "netstat", "-an", "|", "grep", "9083" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./trino/config/hive-site.xml:/opt/hive/conf/hive-site.xml
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+  trino-coordinator:
+    image: trinodb/trino:423
+    container_name: trino-coordinator
+    ports:
+      - "8090:8080"
+    depends_on:
+      - hive-metastore
+    volumes:
+      - ./trino/config/catalog:/etc/trino/catalog
+      - ./trino/config/coordinator:/etc/trino
+      - ./trino/scripts:/scripts
+      - ./containers-data/trino-data-coordinator:/var/trino/data
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_DEFAULT_REGION}
+    user: "trino:trino"
+    healthcheck:
+      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8080", "--execute", "SELECT 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+
+  trino-worker:
+    image: trinodb/trino:423
+    container_name: trino-worker
+    depends_on:
+      - trino-coordinator
+    volumes:
+      - ./trino/config/catalog:/etc/trino/catalog
+      - ./trino/config/worker:/etc/trino
+      - ./trino/scripts:/scripts
+      - ./containers-data/trino-data-worker:/var/trino/data
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_DEFAULT_REGION}
+    user: "trino:trino"
+    healthcheck:
+      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8080", "--execute", "SELECT 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - ${GLOBAL_NETWORK:-services}
