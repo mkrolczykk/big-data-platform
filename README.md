@@ -1,4 +1,4 @@
-## Current architecture
+## High-level architecture of the project
 ![img.png](docs/img.png)
 
 ## Guide
