@@ -1,6 +1,12 @@
 ## High-level architecture of the project
-![img.png](docs/img.png)
-
+![high-level-architecture.png](docs/high-level-architecture.png)
+## Clusters
+### Spark
+![spark.png](docs/spark.png)
+### Airflow
+![airflow.png](docs/airflow.png)
+### Trino
+![trino.png](docs/trino.png)
 ## Guide
 ### Start project
 ```
