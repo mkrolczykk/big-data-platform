@@ -18,8 +18,7 @@ def prepare_input(**kwargs):
     # AWS available .csv filenames (just for presentation):
     # 1. Electric_Production
     # 2. monthly-beer-production-in-austr
-    # 3. car_sales_data
-    src_data = "car_sales_data"
+    src_data = "monthly-beer-production-in-austr"
 
     aws_input_uri = f's3a://{s3_bucket_name}/00_landing/{src_data}.csv'
 

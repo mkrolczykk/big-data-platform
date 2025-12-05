@@ -14,7 +14,7 @@ import os
 import sys
 from dependencies.spark import start_spark
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, udf, current_timestamp, current_date
+from pyspark.sql.functions import col, udf, current_timestamp, current_date, to_date
 from pyspark.sql.types import StringType
 
 
@@ -64,6 +64,17 @@ def process_data(sdf: DataFrame) -> DataFrame:
 
     final_sdf = (
         sdf
+
+        # # ----- dane nr. 1: electric_production -----
+        # .withColumn('event_date', to_date(col("DATE"), "d/M/yyyy"))
+        # .withColumn('value', col("IPG2211A2N").cast("double"))
+        # # -------------------------------------------
+
+        # ----- dane nr. 2: monthly_beer_production_in_austr -----
+        .withColumn('event_date', to_date(col("Month"), "yyyy-MM"))
+        .withColumn('monthly_beer_production_value', col("Monthly beer production").cast("double"))
+        # --------------------------------------------------------
+
         # [...] data cleaning, deduplication, and other...
         .withColumn('processing_timestamp', current_timestamp())
         .withColumn('last_refresh_date', current_date())
@@ -82,8 +93,7 @@ def write_to_postgresql(sdf: DataFrame, postgresql_output_url: str) -> None:
     # Tables (hardcoded, only for presentation):
     # 1. electric_production
     # 2. monthly_beer_production_in_austr
-    # 3. car_sales
-    table_name = "car_sales"
+    table_name = "monthly_beer_production_in_austr"
 
     (
         sdf
