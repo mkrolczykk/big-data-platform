@@ -8,9 +8,9 @@ DAG_name = 'examples_wordcount'
 main_dag = DAG(
     DAG_name,
     max_active_runs=1,
-    schedule_interval="@daily",
+    schedule_interval=None,
     default_args={
-        "owner": "Marcin Krolczyk",
+        "owner": "mkrolczyk",
         "start_date": airflow.utils.dates.days_ago(1)
     },
 )
