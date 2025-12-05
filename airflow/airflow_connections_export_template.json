@@ -24,7 +24,7 @@
     "description": "Trino cluster connection URL",
     "host": "trino-coordinator",
     "login": "admin",
-    "port": 8080,
+    "port": 8090,
     "extra": "{\"protocol\": \"http\", \"verify\": \"false\", \"auth\": \"None\"}"
   },
     "minio-conn": {

@@ -57,7 +57,7 @@ services:
     image: trinodb/trino:423
     container_name: trino-coordinator
     ports:
-      - "8090:8080"
+      - "8090:8090"
     depends_on:
       - hive-metastore
     volumes:
@@ -71,7 +71,7 @@ services:
       AWS_REGION: ${AWS_DEFAULT_REGION}
     user: "trino:trino"
     healthcheck:
-      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8080", "--execute", "SELECT 1" ]
+      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8090", "--execute", "SELECT 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -95,7 +95,7 @@ services:
       AWS_REGION: ${AWS_DEFAULT_REGION}
     user: "trino:trino"
     healthcheck:
-      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8080", "--execute", "SELECT 1" ]
+      test: [ "CMD", "trino", "--server", "http://trino-coordinator:8090", "--execute", "SELECT 1" ]
       interval: 15s
       timeout: 10s
       retries: 10
