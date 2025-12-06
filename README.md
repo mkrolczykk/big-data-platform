@@ -7,6 +7,10 @@
 ![airflow.png](docs/airflow.png)
 ### Trino
 ![trino.png](docs/trino.png)
+
+## Medalion architecture - how it works
+![medalion-architecture.png](docs/medalion-architecture.png)
+
 ## Guide
 ### Start project
 ```

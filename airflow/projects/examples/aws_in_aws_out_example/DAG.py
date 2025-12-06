@@ -19,7 +19,7 @@ def prepare_input(**kwargs):
     # 1. Electric_Production
     # 2. monthly-beer-production-in-austr
     # 3. car_sales_data
-    src_data = "Electric_Production"
+    src_data = "car_sales_data"
 
     aws_input_uri = f's3a://{s3_bucket_name}/00_landing/{src_data}.csv'
 

@@ -179,7 +179,7 @@ def process_data(spark: SparkSession, sdf: DataFrame) -> DataFrame:
             F.col("Salesperson").alias("sales_person"),
             F.col("Car Make").alias("car_make"),
             F.col("Date").alias("sale_date"),
-            F.col("sale_timestamp"),
+            F.col("event_timestamp"),
             F.col("Customer Name").alias("customer_name"),
             F.col("Car Model").alias("car_model"),
             F.col("Car Year").alias("car_year"),
